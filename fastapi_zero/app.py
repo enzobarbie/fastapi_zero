@@ -12,5 +12,5 @@ app.include_router(users.router)
 
 
 @app.post('/', status_code=HTTPStatus.OK, response_model=Message)
-def read_root(texto: Message):
+async def read_root(texto: Message):
     return Message(message=texto.message)
