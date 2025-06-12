@@ -49,7 +49,7 @@ def test_create_same_email(client, user):
     assert 'Email already exists' in response.text
 
 
-def test_read_users_with_user(client, user, token):
+def test_read_users(client, user, token):
     response = client.get(
         '/users/', headers={'Authorization': f'Bearer {token}'}
     )
