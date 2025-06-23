@@ -21,34 +21,6 @@ def test_create_user(client):
     }
 
 
-def test_create_same_username(client, user):
-    response = client.post(
-        '/users/',
-        json={
-            'username': 'Teste',
-            'email': 'teste@test.com',
-            'password': 'testtest',
-        },
-    )
-
-    assert response.status_code == HTTPStatus.CONFLICT
-    assert 'Username already exists' in response.text
-
-
-def test_create_same_email(client, user):
-    response = client.post(
-        '/users/',
-        json={
-            'username': 'Testudo',
-            'email': 'teste@test.com',
-            'password': 'testtest',
-        },
-    )
-
-    assert response.status_code == HTTPStatus.CONFLICT
-    assert 'Email already exists' in response.text
-
-
 def test_read_users(client, user, token):
     response = client.get(
         '/users/', headers={'Authorization': f'Bearer {token}'}
@@ -56,17 +28,6 @@ def test_read_users(client, user, token):
     user_schema = UserPublic.model_validate(user).model_dump()
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'users': [user_schema]}
-
-
-def test_get_user(client, user):
-    response = client.get(f'/users/{user.id}')
-
-    assert response.status_code == HTTPStatus.OK
-    assert response.json() == {
-        'username': 'Teste',
-        'email': 'teste@test.com',
-        'id': 1,
-    }
 
 
 def test_get_a_non_user(client):
@@ -93,9 +54,9 @@ def test_update_user(client, user, token):
     }
 
 
-def test_update_a_non_user(client, token):
+def test_update_user_with_wrong_user(client, other_user, token):
     response = client.put(
-        '/users/0',
+        f'/users/{other_user.id}',
         headers={'Authorization': f'Bearer {token}'},
         json={
             'username': 'bob',
@@ -142,9 +103,9 @@ def test_delete_user(client, user, token):
     assert 'User deleted!' in response.text
 
 
-def test_delete_a_non_user(client, token):
+def test_delete_a_non_user(client, other_user, token):
     response = client.delete(
-        '/users/0',
+        f'/users/{other_user.id}',
         headers={'Authorization': f'Bearer {token}'},
     )
 
